@@ -1,4 +1,10 @@
-"use client";
+import { useState } from "react";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DollarSign } from "lucide-react";
+import { useForm } from "react-hook-form";
+import type { TypeOf } from "zod";
+import { coerce, object, string } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,10 +32,6 @@ import {
 } from "@/components/ui/select";
 import { addSoccerField } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
 
 export const states = [
   { value: "AL", label: "Alabama" },
@@ -40,16 +42,17 @@ export const states = [
   // ... add all other states
 ];
 
-const formSchema = z.object({
-  name: z.string().min(1, "Field name is required"),
-  address: z.string().min(1, "Address is required"),
-  state: z.string().min(1, "State is required"),
+const formSchema = object({
+  name: string().min(1, "Field name is required"),
+  address: string().min(1, "Address is required"),
+  state: string().min(1, "State is required"),
+  hourlyRate: coerce.number().min(0, "Hourly rate must be greater than 0"),
 });
 
 export const AddSoccerFieldDialog = () => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<TypeOf<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -67,7 +70,7 @@ export const AddSoccerFieldDialog = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: TypeOf<typeof formSchema>) {
     mutation.mutate(values);
   }
 
@@ -119,6 +122,37 @@ export const AddSoccerFieldDialog = () => {
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione su departamento" />
                       </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {states.map((state) => (
+                        <SelectItem key={state.value} value={state.value}>
+                          {state.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="hourlyRate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Valor la hora</FormLabel>
+                  <Select onValueChange={field.onChange}>
+                    <FormControl>
+                      <div className="flex items-center">
+                        <div className="flex h-9 items-center justify-center rounded-l border border-r-0 bg-muted px-3 py-1">
+                          <DollarSign className="size-4" />
+                        </div>
+                        <Input
+                          className="rounded-l-none border-l-0"
+                          placeholder="100.000"
+                          type="number"
+                        />
+                      </div>
                     </FormControl>
                     <SelectContent>
                       {states.map((state) => (

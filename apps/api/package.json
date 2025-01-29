@@ -2,14 +2,44 @@
   "name": "api",
   "type": "module",
   "scripts": {
+    "dev:watch": "tsc -p tsconfig.build.json --watch",
     "dev": "tsx watch src/index.ts"
+  },
+  "exports": {
+    "./hc": {
+      "import": {
+        "default": "./dist/src/hc.js",
+        "types": "./dist/src/hc.d.ts"
+      }
+    },
+    "./auth": {
+      "import": {
+        "default": "./dist/src/utils/auth.js",
+        "types": "./dist/src/utils/auth.d.ts"
+      }
+    },
+    "./db": {
+      "import": {
+        "default": "./dist/src/db/schema/index.js",
+        "types": "./dist/src/db/schema/index.d.ts"
+      }
+    }
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "hono": "^4.6.18"
+    "@hono/zod-validator": "^0.4.2",
+    "@libsql/client": "^0.14.0",
+    "@upstash/redis": "^1.34.3",
+    "better-auth": "^1.1.14",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.0",
+    "drizzle-zod": "^0.7.0",
+    "hono": "^4.6.19"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1"
+    "@flydotio/dockerfile": "^0.7.4",
+    "@types/node": "^22.12.0",
+    "drizzle-kit": "^0.30.3",
+    "tsx": "^4.19.2"
   }
 }

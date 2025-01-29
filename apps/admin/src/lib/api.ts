@@ -1,6 +1,43 @@
+import { hcWithType } from "api/hc";
+
 import type { SoccerField } from "@/types";
 
-// This is a mock API. In a real application, you would make actual API calls here.
+const publicEndpoints = [] as const;
+
+function isPublicEndpoint(url: string | URL | Request) {
+  const urlString = url instanceof Request ? url.url : url.toString();
+  const parsedUrl = new URL(urlString);
+  const path = parsedUrl.pathname;
+
+  const normalizedPath = path.replace(new URL(process.env.API_URL ?? "").pathname, "");
+
+  return publicEndpoints.some((ept) => normalizedPath === ept);
+}
+
+function createFetch(baseFetch: typeof fetch): typeof fetch {
+  return async (input, init) => {
+    try {
+      if (isPublicEndpoint(input)) {
+        return await baseFetch(input, init);
+      }
+
+      const token = localStorage.getItem("token");
+      const headers = new Headers(init?.headers ?? {});
+
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+
+      return await baseFetch(input, { ...init, headers });
+    } catch (error) {
+      throw error;
+    }
+  };
+}
+
+export const { api } = hcWithType(process.env.PUBLIC_API_URL ?? "", {
+  fetch: createFetch(fetch),
+});
 
 const fields: SoccerField[] = [
   {

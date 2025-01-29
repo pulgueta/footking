@@ -1,3 +1,8 @@
+import { useState } from "react";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Field } from "api/db";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -5,14 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { updateFieldAvailability } from "@/lib/api";
-import type { SoccerField } from "@/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 
 const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
 type FieldAvailabilityManagerProps = {
-  field: SoccerField;
+  field: Field;
   onClose: () => void;
 };
 

@@ -21,15 +21,22 @@ RUN corepack enable
 
 # Install node modules
 COPY package.json ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 
-FROM final as server
+COPY . .
+WORKDIR /app/api
 
-COPY --from=build /app/apps/api/* /app
+RUN pnpm build
+
+FROM node:${NODE_VERSION}-alpine AS production
+WORKDIR /app
+
+COPY --from=builder /app/api/package*.json ./api/
+COPY --from=builder /app/api/dist ./api/dist
+
+WORKDIR /app/api
 
 RUN pnpm install
-
-COPY --from=server . .
 
 EXPOSE 3000
 CMD [ "pnpm", "start" ]

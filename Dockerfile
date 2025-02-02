@@ -31,8 +31,8 @@ RUN pnpm build
 FROM node:${NODE_VERSION}-alpine AS production
 WORKDIR /app
 
-COPY --from=builder /app/api/package*.json ./api/
-COPY --from=builder /app/api/dist ./api/dist
+COPY --from=build /app/api/package*.json ./api/
+COPY --from=build /app/api/dist ./api/dist
 
 WORKDIR /app/api
 

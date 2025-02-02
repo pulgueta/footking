@@ -27,6 +27,7 @@ jobs:
     name: Deploy backend
     runs-on: ubuntu-latest
     concurrency: deploy-group
+    needs: migrations
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

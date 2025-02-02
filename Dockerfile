@@ -14,13 +14,12 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 RUN corepack enable
 
-COPY package.json ./
+COPY package.json pnpm-lock.yaml ./
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm fetch --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 
 COPY . .
-
-WORKDIR /app/api
 
 RUN pnpm build
 
@@ -30,10 +29,9 @@ ENV NODE_ENV="production"
 
 WORKDIR /app
 
-COPY --from=build /app/api/package*.json ./api/
-COPY --from=build /app/api/dist ./api/dist
+COPY --from=build /app/api/package*.json ./
+COPY --from=build /app/api/dist ./dist
 
-WORKDIR /app/api
 
 RUN pnpm install --prod
 

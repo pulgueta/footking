@@ -8,7 +8,6 @@ WORKDIR /app
 
 FROM base AS build
 
-ENV NODE_ENV="development"
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -21,7 +20,8 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install
 
 COPY . .
 
-RUN pnpm build:app
+RUN pnpm build:api
+RUN pnpm build:admin
 
 FROM node:${NODE_VERSION}-alpine AS production
 

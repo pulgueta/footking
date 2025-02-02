@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "build:app": "turbo run build",
+    "build:api": "pnpm --filter=api run build",
+    "build:admin": "pnpm --filter=admin run build",
     "dev": "turbo dev",
     "lint": "biome lint --write --unsafe .",
     "format": "biome format --write ."

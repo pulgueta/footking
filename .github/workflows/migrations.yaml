@@ -1,0 +1,24 @@
+name: Apply DB migrations
+on:
+  push:
+    branches:
+      - main
+jobs:
+  migrations:
+    name: Run migrations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+            persist-credentials: false
+
+      - name: Setup environment
+        uses: ./.github/setup
+
+      - name: Run migrations
+        run: pnpm --filter=api run db:generate && pnpm --filter=api run db:migrate
+        env:
+            TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+            TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}

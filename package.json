@@ -2,9 +2,7 @@
   "name": "footking",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "build:api": "pnpm --filter=api run build",
-    "build:admin": "pnpm --filter=admin run build",
+    "build": "turbo build --token=$TURBO_TOKEN",
     "dev": "turbo dev",
     "lint": "biome lint --write --unsafe .",
     "format": "biome format --write ."

@@ -33,9 +33,6 @@ lerna-debug.log*
 dist
 
 LICENSE
-pnpm-workspace.yaml
 README.md
-turbo.json
 .npmrc
 .vscode
-.turbo

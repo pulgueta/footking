@@ -2,26 +2,37 @@ ARG NODE_VERSION=22
 
 FROM node:${NODE_VERSION}-alpine AS base
 
+FROM base AS deps
+
 LABEL fly_launch_runtime="Node.js"
+
+RUN npm install -g pnpm
 
 WORKDIR /app
 
+COPY package.json pnpm-*.yaml ./
+COPY apps/api/package.json ./apps/api/
+
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm fetch --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile --prod
+
 FROM base AS build
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+WORKDIR /app
 
-RUN corepack enable
+RUN npm install -g pnpm
 
 COPY package.json pnpm-*.yaml ./
+COPY apps/api/package.json ./apps/api/
 
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm fetch --frozen-lockfile
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 
-COPY . .
+COPY apps/api ./apps/api
 
-RUN pnpm build:api
-RUN pnpm build:admin
+RUN pnpm --filter=api run db:generate
+RUN pnpm --filter=api run db:migrate
+RUN pnpm --filter=api build
 
 FROM node:${NODE_VERSION}-alpine AS production
 
@@ -29,11 +40,10 @@ ENV NODE_ENV="production"
 
 WORKDIR /app
 
-COPY --from=build /app/api/package*.json ./
-COPY --from=build /app/api/dist ./dist
+RUN npm install -g pnpm
 
-
-RUN pnpm install --prod
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/apps/api/dist ./dist
 
 EXPOSE 3000
 

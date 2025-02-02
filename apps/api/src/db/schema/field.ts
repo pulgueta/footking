@@ -1,27 +1,38 @@
-import { index, int, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, int, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import type { TypeOf } from "zod";
 
 import { userTable } from "./user";
 
+export type FieldAvailability = {
+  [day: string]: {
+    open: string;
+    close: string;
+  };
+};
+
 export const fieldTable = sqliteTable(
   "field",
   {
     id: int().primaryKey({ autoIncrement: true }),
-    name: text().notNull(),
+    name: text().notNull().unique(),
     address: text().notNull(),
     state: text().notNull(),
+    city: text().notNull(),
     hourlyRate: int().notNull(),
-    userId: int()
+    userId: text()
       .notNull()
-      .references(() => userTable.id),
-    createdAt: integer({ mode: "timestamp" }),
-    updatedAt: integer({ mode: "timestamp" }),
+      .references(() => userTable.id, { onDelete: "cascade" }),
+    availability: text({ mode: "json" }).$type<FieldAvailability>().notNull(),
+    createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
+    updatedAt: integer({ mode: "timestamp" })
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
   },
   (t) => [
     index("by_userId_idx").on(t.userId),
     index("by_createdAt_idx").on(t.createdAt),
-    index("by_name_idx").on(t.name),
+    uniqueIndex("by_field_name_idx").on(t.name),
   ],
 );
 
@@ -35,3 +46,4 @@ export const fieldSchema = createSelectSchema(fieldTable);
 
 export type Field = TypeOf<typeof fieldSchema>;
 export type CreateField = TypeOf<typeof createFieldSchema>;
+export type UpdateField = Partial<CreateField>;

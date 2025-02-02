@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@flydotio/dockerfile": "^0.7.4",
     "@t3-oss/env-core": "^0.12.0",
     "turbo": "^2.3.4",
     "typescript": "5.7.3",

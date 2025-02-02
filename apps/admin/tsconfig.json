@@ -9,7 +9,8 @@
     "moduleResolution": "Bundler",
     "strictNullChecks": true,
     "skipLibCheck": true,
-    "composite": true,
+    "declaration": false,
+    "declarationMap": false,
     "paths": {
       "@/*": ["./src/*"]
     }

@@ -3,7 +3,11 @@
   "type": "module",
   "scripts": {
     "dev:watch": "tsc -p tsconfig.build.json --watch",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "db:reset": "tsx src/db/reset.ts",
+    "db:seed": "tsx src/db/reset.ts && tsx src/db/seed.ts"
   },
   "exports": {
     "./hc": {
@@ -23,23 +27,31 @@
         "default": "./dist/src/db/schema/index.js",
         "types": "./dist/src/db/schema/index.d.ts"
       }
+    },
+    "./cache-keys": {
+      "import": {
+        "default": "./dist/src/utils/cache-keys.js",
+        "types": "./dist/src/utils/cache-keys.d.ts"
+      }
     }
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@hono/zod-validator": "^0.4.2",
     "@libsql/client": "^0.14.0",
+    "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.3",
     "better-auth": "^1.1.14",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.0",
     "drizzle-zod": "^0.7.0",
-    "hono": "^4.6.19"
+    "hono": "^4.6.19",
+    "hono-geo-middleware": "^0.1.2"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.7.4",
     "@types/node": "^22.12.0",
     "drizzle-kit": "^0.30.3",
+    "drizzle-seed": "^0.3.1",
     "tsx": "^4.19.2"
   }
 }

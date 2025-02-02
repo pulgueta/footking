@@ -1,134 +1,203 @@
-import { useState } from "react";
+"use client";
 
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Field } from "api/db";
+import type { Field, CreateBooking } from "api/db";
+import { createBookingSchema } from "api/db";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { updateFieldAvailability } from "@/lib/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-
-type FieldAvailabilityManagerProps = {
+type BookingFormProps = {
   field: Field;
+  userId: Field["userId"];
   onClose: () => void;
 };
 
-export const FieldAvailabilityManager = ({ field, onClose }: FieldAvailabilityManagerProps) => {
-  const [availability, setAvailability] = useState(field.availability || {});
-  const [globalHours, setGlobalHours] = useState("");
-  const [applyToAll, setApplyToAll] = useState(false);
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-
+export const BookingForm = ({ field, userId, onClose }: BookingFormProps) => {
+  const [_, setSelectedDay] = useState<Date | undefined>(undefined);
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: updateFieldAvailability,
+  const form = useForm<CreateBooking>({
+    resolver: zodResolver(createBookingSchema),
+    defaultValues: {
+      userId,
+      fieldId: field.id,
+      day: "",
+      startHour: "",
+      endHour: "",
+    },
+  });
+
+  const mutation = useMutation<void, Error, CreateBooking>({
+    mutationFn: () => {
+      return new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 2000);
+      });
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["soccerFields"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
       onClose();
     },
   });
 
-  const handleAvailabilityChange = (day: string, isAvailable: boolean) => {
-    setAvailability((prev) => ({ ...prev, [day]: { ...prev[day], isAvailable } }));
+  const onSubmit = (data: CreateBooking) => {
+    mutation.mutate(data);
   };
 
-  const handleHoursChange = (day: string, hours: string) => {
-    setAvailability((prev) => ({ ...prev, [day]: { ...prev[day], hours } }));
-  };
+  const getAvailableHours = useCallback(
+    (day: string) => {
+      const dayAvailability = field.availability[day];
+      if (!dayAvailability) return [];
 
-  const handleGlobalHoursChange = () => {
-    if (applyToAll) {
-      const updatedAvailability = { ...availability };
-      daysOfWeek.forEach((day) => {
-        updatedAvailability[day] = { ...updatedAvailability[day], hours: globalHours };
-      });
-      setAvailability(updatedAvailability);
-    } else {
-      const updatedAvailability = { ...availability };
-      selectedDays.forEach((day) => {
-        updatedAvailability[day] = { ...updatedAvailability[day], hours: globalHours };
-      });
-      setAvailability(updatedAvailability);
-    }
-  };
+      const { open, close } = dayAvailability;
+      const hours: string[] = [];
+      let currentHour = open;
 
-  const handleSave = () => {
-    mutation.mutate({ fieldId: field.id, availability });
-  };
+      while (currentHour < close) {
+        hours.push(currentHour);
+        const [h, m] = currentHour.split(":");
+        let hour = parseInt(h);
+        hour = (hour + 1) % 24;
+        currentHour = `${hour.toString().padStart(2, "0")}:${m}`;
+      }
+
+      return hours;
+    },
+    [field.availability],
+  );
+
+  const dayOptions = Object.keys(field.availability).map((day) => ({
+    label: day,
+    value: day,
+  }));
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-sm rounded md:max-w-xl">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Gestionar Disponibilidad del Campo - {field.name}</DialogTitle>
+          <DialogTitle>Reservar {field.name}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <Input
-              type="text"
-              placeholder="ej. 9:00 AM - 5:00 PM"
-              value={globalHours}
-              onChange={(e) => setGlobalHours(e.target.value)}
-            />
-            <Button onClick={handleGlobalHoursChange}>Aplicar Horario</Button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="applyToAll"
-              checked={applyToAll}
-              onCheckedChange={(checked) => setApplyToAll(checked as boolean)}
-            />
-            <Label htmlFor="applyToAll">Aplicar a todos los días</Label>
-          </div>
-          {!applyToAll && (
-            <div className="grid grid-cols-3 gap-4 md:grid-cols-4">
-              {daysOfWeek.map((day) => (
-                <div key={day} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`day-${day}`}
-                    checked={selectedDays.includes(day)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setSelectedDays([...selectedDays, day]);
-                      } else {
-                        setSelectedDays(selectedDays.filter((d) => d !== day));
-                      }
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="day"
+              render={({ field: dayField }) => (
+                <FormItem>
+                  <FormLabel>Día</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      dayField.onChange(value);
+                      setSelectedDay(new Date());
                     }}
-                  />
-                  <Label htmlFor={`day-${day}`}>{day}</Label>
-                </div>
-              ))}
-            </div>
-          )}
-          {daysOfWeek.map((day) => (
-            <div key={day} className="flex items-center justify-between">
-              <Label htmlFor={`switch-${day}`}>{day}</Label>
-              <div className="flex items-center space-x-4">
-                <Input
-                  type="text"
-                  placeholder="ej. 9:00 AM - 5:00 PM"
-                  value={availability[day]?.hours || ""}
-                  onChange={(e) => handleHoursChange(day, e.target.value)}
-                  className="w-48"
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un día" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {dayOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {form.watch("day") && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="startHour"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Hora de inicio</FormLabel>
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona hora inicial" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {getAvailableHours(form.getValues("day")).map((hour) => (
+                            <SelectItem key={hour} value={hour}>
+                              {hour}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                <Switch
-                  id={`switch-${day}`}
-                  checked={availability[day]?.isAvailable || false}
-                  onCheckedChange={(checked) => handleAvailabilityChange(day, checked)}
+
+                <FormField
+                  control={form.control}
+                  name="endHour"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Hora de fin</FormLabel>
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona hora final" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {getAvailableHours(form.getValues("day"))
+                            .filter((hour) => hour > form.getValues("startHour"))
+                            .map((hour) => (
+                              <SelectItem key={hour} value={hour}>
+                                {hour}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            </div>
-          ))}
-          <Button onClick={handleSave} disabled={mutation.isPending}>
-            {mutation.isPending ? "Guardando..." : "Guardar Disponibilidad"}
-          </Button>
-        </div>
+              </>
+            )}
+
+            <DialogFooter>
+              <Button type="submit" disabled={mutation.isPending}>
+                {mutation.isPending ? "Reservando..." : "Reservar"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

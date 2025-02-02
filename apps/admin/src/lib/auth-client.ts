@@ -1,15 +1,21 @@
-import { inferAdditionalFields, jwtClient } from "better-auth/client/plugins";
+import { inferAdditionalFields, phoneNumberClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 import { auth } from "api/auth";
 
 const authClient = createAuthClient({
-  baseURL: process.env.API_URL,
-  fetchOptions: {},
-  plugins: [inferAdditionalFields<typeof auth>(), jwtClient()],
+  baseURL: process.env.PUBLIC_API_URL,
+  plugins: [inferAdditionalFields<typeof auth>(), phoneNumberClient()],
 });
 
-export type User = typeof auth.$Infer.Session.user | null;
-export type Session = typeof auth.$Infer.Session.session | null;
+export type User = typeof authClient.$Infer.Session.user | null;
+export type Session = typeof authClient.$Infer.Session.session | null;
 
-export const { useSession } = authClient;
+export function useSession() {
+  const { data, isPending } = authClient.useSession();
+
+  return {
+    user: data?.user,
+    isPending,
+  };
+}

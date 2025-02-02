@@ -1,24 +1,24 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
-import { db } from "@/db/config";
-import { createFieldSchema, fieldTable } from "@/db/schema";
-import { getOwnerFields } from "@/services/db";
+import { createFieldSchema } from "@/db/schema";
+import { searchFieldSchema } from "@/schemas";
+import { createField, getOwnerFields } from "@/services/owner.db";
 
 const app = new Hono();
 
 export const fieldRoutes = app
-  .get("/:ownerId", async (c) => {
-    const ownerId = c.req.param("ownerId");
+  .get("/", zValidator("query", searchFieldSchema), async (c) => {
+    const query = c.req.valid("query");
 
-    const fields = await getOwnerFields(Number(ownerId));
+    const fields = await getOwnerFields(query.ownerId);
 
-    return c.json({ fields });
+    return c.json(fields);
   })
   .post("/", zValidator("json", createFieldSchema), async (c) => {
     const field = c.req.valid("json");
 
-    const [createdField] = await db.insert(fieldTable).values(field).returning();
+    const createdField = await createField(field);
 
     return c.json({ message: "Field created", field: createdField });
   });

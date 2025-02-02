@@ -10,27 +10,29 @@ export const sessionTable = sqliteTable("session", {
   userAgent: text(),
   userId: int()
     .notNull()
-    .references(() => userTable.id),
-  createdAt: integer({ mode: "timestamp" }),
-  updatedAt: integer({ mode: "timestamp" }),
+    .references(() => userTable.id, { onDelete: "cascade" }),
+  createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  updatedAt: integer({ mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
 });
 
 export const account = sqliteTable("account", {
   id: int().primaryKey({ autoIncrement: true }),
   accountId: text().notNull(),
   providerId: text().notNull(),
-  userId: text()
+  userId: int()
     .notNull()
-    .references(() => userTable.id),
+    .references(() => userTable.id, { onDelete: "cascade" }),
   accessToken: text(),
   refreshToken: text(),
   idToken: text(),
-  accessTokenExpiresAt: integer({ mode: "timestamp" }),
-  refreshTokenExpiresAt: integer({ mode: "timestamp" }),
   scope: text(),
   password: text(),
-  createdAt: integer({ mode: "timestamp" }),
-  updatedAt: integer({ mode: "timestamp" }),
+  createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  updatedAt: integer({ mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
 });
 
 export const verification = sqliteTable("verification", {
@@ -38,13 +40,18 @@ export const verification = sqliteTable("verification", {
   identifier: text().notNull(),
   value: text().notNull(),
   expiresAt: integer({ mode: "timestamp" }).notNull(),
-  createdAt: integer({ mode: "timestamp" }),
-  updatedAt: integer({ mode: "timestamp" }),
+  createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  updatedAt: integer({ mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
 });
 
 export const jwks = sqliteTable("jwks", {
   id: int().primaryKey({ autoIncrement: true }),
   publicKey: text().notNull(),
   privateKey: text().notNull(),
-  createdAt: integer({ mode: "timestamp" }),
+  createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  updatedAt: integer({ mode: "timestamp" })
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
 });

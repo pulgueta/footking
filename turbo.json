@@ -3,6 +3,17 @@
   "ui": "tui",
   "tasks": {
     "build": {
+      "env": [
+        "NODE_ENV",
+        "TURSO_DATABASE_URL",
+        "TURSO_AUTH_TOKEN",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "API_URL",
+        "FRONTEND_URL"
+      ],
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist"]
@@ -17,8 +28,8 @@
       "env": [
         "TURSO_DATABASE_URL",
         "TURSO_AUTH_TOKEN",
-        "REDIS_URL",
-        "REDIS_TOKEN",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN",
         "BETTER_AUTH_SECRET",
         "BETTER_AUTH_URL",
         "API_URL",

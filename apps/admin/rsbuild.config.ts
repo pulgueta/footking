@@ -1,23 +1,23 @@
-import { defineConfig, loadEnv } from "@rsbuild/core";
+import { defineConfig } from "@rsbuild/core";
+import { pluginBabel } from "@rsbuild/plugin-babel";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { TanStackRouterRspack } from "@tanstack/router-plugin/rspack";
 
 export default defineConfig({
-  plugins: [pluginReact()],
+  plugins: [
+    pluginReact(),
+    pluginBabel({
+      include: /\.(?:jsx|tsx)$/,
+      babelLoaderOptions: (opts) => {
+        opts.plugins?.unshift("babel-plugin-react-compiler");
+      },
+    }),
+  ],
   source: {
     entry: { index: "./src/main.tsx" },
     define: {
       "process.env": JSON.stringify(process.env),
     },
-  },
-  server: {
-    proxy: [
-      {
-        context: "/api",
-        target: process.env.PUBLIC_API_URL ?? "http://localhost:3001",
-        changeOrigin: true,
-      },
-    ],
   },
   html: {
     template: "./index.html",

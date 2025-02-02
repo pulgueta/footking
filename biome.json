@@ -9,7 +9,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["tsconfig*"]
+    "ignore": ["tsconfig*", "routeTree.gen.ts"]
   },
   "formatter": {
     "enabled": true,

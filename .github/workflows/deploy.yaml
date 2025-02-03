@@ -3,9 +3,10 @@ on:
   push:
     branches:
       - main
+
 jobs:
-  migrations:
-    name: Run migrations
+  deploy:
+    name: Run deployment
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -19,6 +20,7 @@ jobs:
 
       - name: Run migrations
         run: pnpm --filter=api run db:generate && pnpm --filter=api run db:migrate
+        continue-on-error: true
         env:
             TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
             TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}

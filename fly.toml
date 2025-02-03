@@ -7,6 +7,7 @@ app = 'footking'
 primary_region = 'bog'
 
 [build]
+  dockerfile = "apps/api/Dockerfile"
 
 [http_service]
   internal_port = 3000

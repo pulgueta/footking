@@ -1,16 +1,12 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 
 import jsonStates from "@/data/colombia.json";
 
 export function useColombia() {
-  const states = useMemo(() => {
-    const filtered = jsonStates.map((state) => ({
-      state: state.departamento,
-      cities: state.ciudades,
-    }));
-
-    return filtered;
-  }, []);
+  const states = jsonStates.map((state) => ({
+    state: state.departamento,
+    cities: state.ciudades,
+  }));
 
   const citiesFromState = useCallback(
     (state: string) => {

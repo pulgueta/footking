@@ -32,7 +32,7 @@ import {
 import { useColombia } from "@/hooks/use-colombia";
 import { createField } from "@/services/field";
 import { cacheKeys } from "api/cache-keys";
-import { useSession } from "@/lib/auth-client";
+// import { useSession } from "@/lib/auth-client";
 
 const defaultAvailability: FieldAvailability = {
   Lunes: { open: "06:00", close: "22:00" },
@@ -47,7 +47,7 @@ const defaultAvailability: FieldAvailability = {
 export const AddSoccerFieldDialog = () => {
   const queryClient = useQueryClient();
 
-  const { user } = useSession();
+  // const { user } = useSession();
 
   const form = useForm<CreateField>({
     resolver: zodResolver(createFieldSchema),
@@ -58,7 +58,7 @@ export const AddSoccerFieldDialog = () => {
       hourlyRate: 0,
       city: "",
       availability: defaultAvailability,
-      userId: user?.id,
+      userId: "1",
     },
   });
 
@@ -74,8 +74,8 @@ export const AddSoccerFieldDialog = () => {
 
   const selectedState = form.watch("state");
 
-  const onSubmit = form.handleSubmit((data: CreateField) => {
-    console.log(data);
+  const onSubmit = form.handleSubmit(async (data: CreateField) => {
+    await mutation.mutateAsync(data);
   });
 
   return (
@@ -142,7 +142,7 @@ export const AddSoccerFieldDialog = () => {
                   </FormItem>
                 )}
               />
-              {!!form.watch("state") && (
+              {!!selectedState && (
                 <FormField
                   control={form.control}
                   name="city"

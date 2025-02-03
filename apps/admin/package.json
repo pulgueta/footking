@@ -11,14 +11,12 @@
   },
   "devDependencies": {
     "@rsbuild/core": "^1.2.3",
-    "@rsbuild/plugin-babel": "^1.0.3",
     "@rsbuild/plugin-react": "^1.1.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@tanstack/router-plugin": "^1.97.23",
     "@types/node": "^22.12.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "babel-plugin-react-compiler": "19.0.0-beta-27714ef-20250124",
     "postcss": "^8.5.1",
     "tailwindcss": "^4.0.0"
   },

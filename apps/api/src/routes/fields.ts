@@ -18,7 +18,15 @@ export const fieldRoutes = app
   .post("/", zValidator("json", createFieldSchema), async (c) => {
     const field = c.req.valid("json");
 
-    const createdField = await createField(field);
+    console.log(field);
 
-    return c.json({ message: "Field created", field: createdField });
+    try {
+      const createdField = await createField(field);
+
+      return c.json({ message: "Field created", field: createdField });
+    } catch (error) {
+      console.error(error);
+
+      return c.json({ message: "Field already exists" }, 400);
+    }
   });

@@ -31,6 +31,8 @@ export async function createField(fieldData: CreateField) {
 
   await deleteCacheKey(cacheKeys.fields);
 
+  console.log("Field created");
+
   return createdField;
 }
 
@@ -45,7 +47,9 @@ export async function getFieldByName(name: Field["name"]) {
     where: (t, { eq }) => eq(t.name, name),
   });
 
-  await setCacheKey(`${cacheKeys.field}:${name}`, field);
+  if (field) {
+    await setCacheKey(`${cacheKeys.field}:${name}`, field);
+  }
 
   return field;
 }

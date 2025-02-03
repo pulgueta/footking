@@ -1,7 +1,9 @@
+import { relations } from "drizzle-orm";
 import { index, int, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import type { TypeOf } from "zod";
 
+import { bookingTable } from "./booking";
 import { userTable } from "./user";
 
 export type FieldAvailability = {
@@ -35,6 +37,10 @@ export const fieldTable = sqliteTable(
     uniqueIndex("by_field_name_idx").on(t.name),
   ],
 );
+
+export const fieldRelations = relations(fieldTable, ({ many }) => ({
+  bookings: many(bookingTable),
+}));
 
 export const createFieldSchema = createInsertSchema(fieldTable).omit({
   id: true,

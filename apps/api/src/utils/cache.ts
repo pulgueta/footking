@@ -23,9 +23,7 @@ export async function ratelimit(key: string) {
 }
 
 export async function setCacheKey<T>(key: string, value: T) {
-  await cache.set(key, JSON.stringify(value), {
-    ex: 60 * 60,
-  });
+  await cache.set(key, JSON.stringify(value));
 }
 
 export async function getCacheKey<T>(key: string) {

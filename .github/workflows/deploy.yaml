@@ -19,7 +19,8 @@ jobs:
         uses: ./.github/setup
 
       - name: Run migrations
-        run: pnpm --filter=api run db:generate && pnpm --filter=api run db:migrate
+        working-directory: apps/api
+        run: pnpm run db:generate && pnpm run db:migrate
         continue-on-error: true
         env:
             TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
@@ -27,6 +28,7 @@ jobs:
 
       - name: Deploy to Fly
         uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --dockerfile apps/api/Dockerfile
+      - run: flyctl deploy --remote-only
+        working-directory: apps/api
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

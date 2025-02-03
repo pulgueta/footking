@@ -94,11 +94,11 @@ app.get("/auth/get-session", async (c) => {
 
 export const routes = app.route("/fields", fieldRoutes);
 
-const port = Number(process.env.PORT) ?? 3000;
+const port = process.env.PORT!;
 
 console.log(`Server is running on http://localhost:${port}`);
 
 serve({
   fetch: app.fetch,
-  port,
+  port: parseInt(port),
 });

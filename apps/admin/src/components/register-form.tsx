@@ -1,7 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, redirect } from "@tanstack/react-router";
-// import { KeyRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,41 +12,35 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { signIn } from "@/lib/auth-client";
+import { signUp } from "@/lib/auth-client";
 import { loginSchema } from "@/schemas";
-import { Heading, Paragraph } from "@/components/ui/typography";
-// import { Separator } from "@/components/ui/separator";
 
 // @ts-ignore
-import fieldImage from "../../public/field.webp";
-import { Checkbox } from "./ui/checkbox";
+import fieldImage from "../../public/anotherfield.webp";
 
-type Login = Pick<Parameters<typeof signIn.email>["0"], "email" | "password" | "rememberMe">;
+type Register = Omit<Parameters<typeof signUp.email>["0"], "fetchOptions" | "callbackURL">;
 
-export const LoginForm = () => {
-  const form = useForm<Login>({
+export const RegisterForm = () => {
+  const form = useForm<Register>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      password: "",
       email: "",
-      rememberMe: false,
+      image: "",
+      name: "",
+      password: "",
+      phoneNumber: "",
     },
   });
 
   const isDisabled = form.formState.isSubmitting;
 
+  console.log(form.getValues());
+
   const onSubmit = form.handleSubmit(async (values) => {
     try {
-      const req = await signIn.email(values);
+      const req = await signUp.email(values);
 
-      if (req.data) {
-        redirect({
-          to: "/$id",
-          params: {
-            id: req.data.user.id,
-          },
-        });
-      }
+      console.log(req);
     } catch (error) {
       console.error(error);
     }
@@ -58,15 +50,34 @@ export const LoginForm = () => {
     <div className="flex w-full max-w-sm flex-col gap-4 md:max-w-4xl">
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
+          <div className="relative hidden bg-muted md:block">
+            <img
+              src={fieldImage}
+              alt="Image"
+              className="absolute h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+            />
+          </div>
           <Form {...form}>
             <form onSubmit={onSubmit} className="p-6 md:p-8">
               <div className="flex flex-col gap-6">
-                <div className="flex flex-col items-center text-center">
-                  <Heading as="h3">Bienvenido de vuelta</Heading>
-                  <Paragraph muted center weight="normal">
-                    Inicia sesión para continuar
-                  </Paragraph>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nombre</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Gerardo"
+                          autoComplete="name"
+                          disabled={isDisabled}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -76,10 +87,10 @@ export const LoginForm = () => {
                       <FormLabel>Correo electrónico</FormLabel>
                       <FormControl>
                         <Input
-                          disabled={isDisabled}
                           placeholder="tucorreo@electroni.co"
                           type="email"
                           autoComplete="email"
+                          disabled={isDisabled}
                           {...field}
                         />
                       </FormControl>
@@ -93,22 +104,13 @@ export const LoginForm = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center justify-between">
-                        Contraseña{" "}
-                        <Link
-                          to="/"
-                          href="#"
-                          className="ml-auto font-normal text-xs underline-offset-2 hover:underline"
-                        >
-                          ¿Olvidaste tu contraseña?
-                        </Link>
-                      </FormLabel>
+                      <FormLabel>Contraseña</FormLabel>
                       <FormControl>
                         <Input
-                          disabled={isDisabled}
                           placeholder="*********"
                           type="password"
-                          autoComplete="current-password"
+                          autoComplete="new-password"
+                          disabled={isDisabled}
                           {...field}
                         />
                       </FormControl>
@@ -119,43 +121,32 @@ export const LoginForm = () => {
 
                 <FormField
                   control={form.control}
-                  name="rememberMe"
+                  name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel>Número de teléfono</FormLabel>
                       <FormControl>
-                        <div className="flex items-center gap-x-2">
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            disabled={isDisabled}
-                          />
-                          <FormLabel>Recordarme</FormLabel>
-                        </div>
+                        {/* @ts-ignore */}
+                        <Input
+                          placeholder="3014224003"
+                          type="tel"
+                          inputMode="tel"
+                          autoComplete="tel"
+                          disabled={isDisabled}
+                          {...field}
+                        />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
 
                 <Button className="w-full" disabled={isDisabled}>
-                  Iniciar sesión
+                  {isDisabled ? "Registrando..." : "Registrarse"}
                 </Button>
-
-                {/* <Separator />
-
-                <Button variant="outline" className="w-full">
-                  <KeyRound size={16} />
-                  Iniciar sesión con Biometría
-                </Button> */}
               </div>
             </form>
           </Form>
-          <div className="relative hidden bg-muted md:block">
-            <img
-              src={fieldImage}
-              alt="Image"
-              className="absolute h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-            />
-          </div>
         </CardContent>
       </Card>
     </div>

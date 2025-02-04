@@ -8,6 +8,34 @@
       "when": 1738634227210,
       "tag": "0000_cloudy_maximus",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1738696044309,
+      "tag": "0001_elite_callisto",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1738696227063,
+      "tag": "0002_red_mother_askani",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1738697566003,
+      "tag": "0003_pale_true_believers",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1738697922977,
+      "tag": "0004_purple_captain_britain",
+      "breakpoints": true
     }
   ]
 }

@@ -10,6 +10,11 @@ export default defineConfig({
       "process.env": JSON.stringify(process.env),
     },
   },
+  server: {
+    publicDir: {
+      copyOnBuild: true,
+    },
+  },
   html: {
     template: "./index.html",
   },

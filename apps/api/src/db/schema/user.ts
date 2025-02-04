@@ -10,18 +10,16 @@ export const userTable = sqliteTable(
   {
     id: text()
       .primaryKey()
-      .unique()
       .$defaultFn(() => crypto.randomUUID()),
     name: text().notNull(),
+    email: text().notNull().unique(),
+    emailVerified: integer({ mode: "boolean" }).notNull(),
     image: text(),
-    role: text({ enum: ["admin", "owner"] }).notNull(),
-    phoneNumber: text().unique().notNull(),
+    role: text({ enum: ["admin", "owner"] }).default("owner"),
+    phoneNumber: text().unique(),
     phoneNumberVerified: integer({ mode: "boolean" }),
-    createdAt: integer({ mode: "timestamp" })
-      .notNull()
-      .$defaultFn(() => new Date()),
+    createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
     updatedAt: integer({ mode: "timestamp" })
-      .notNull()
       .$defaultFn(() => new Date())
       .$onUpdateFn(() => new Date()),
   },

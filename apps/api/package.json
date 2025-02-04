@@ -49,6 +49,7 @@
     "drizzle-zod": "^0.7.0",
     "hono": "^4.6.20",
     "hono-geo-middleware": "^0.1.2",
+    "twilio": "^5.4.3",
     "zod": "^3.24.1"
   },
   "devDependencies": {

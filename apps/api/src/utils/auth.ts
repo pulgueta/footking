@@ -1,32 +1,25 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { phoneNumber } from "better-auth/plugins";
+import { openAPI, phoneNumber } from "better-auth/plugins";
 
 import { db } from "@/db/config";
 import * as schema from "@/db/schema";
+import { sendOTPMessage } from "@/services/twilio";
 import { getCacheKey, setCacheKey } from "./cache";
 
 export const auth = betterAuth({
   emailAndPassword: {
-    enabled: false,
-  },
-  databaseHooks: {
-    user: {
-      create: {
-        before: async (user) => ({
-          data: {
-            ...user,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            role: "user",
-          },
-        }),
-      },
-    },
+    enabled: true,
+    requireEmailVerification: false,
   },
   database: drizzleAdapter(db, {
     provider: "sqlite",
-    schema,
+    schema: {
+      user: schema.userTable,
+      session: schema.session,
+      account: schema.account,
+      verification: schema.verification,
+    },
   }),
   session: {
     cookieCache: {
@@ -43,7 +36,14 @@ export const auth = betterAuth({
       set: setCacheKey,
     },
   },
-  plugins: [phoneNumber()],
+  plugins: [
+    phoneNumber({
+      sendOTP: async ({ code, phoneNumber }) => {
+        await sendOTPMessage(phoneNumber, code);
+      },
+    }),
+    openAPI(),
+  ],
 });
 
 export type User = typeof auth.$Infer.Session.user | null;

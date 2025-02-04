@@ -57,7 +57,7 @@ app.use("*", async (c, next) => {
 
 app.use("*", GeoMiddleware());
 
-app.on(["POST", "GET"], "/api/auth/**", (c) => auth.handler(c.req.raw));
+app.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw));
 app.on(["POST", "GET", "PUT", "PATCH", "DELETE"], "*", async (c, next) => {
   const geo = getGeo(c);
 

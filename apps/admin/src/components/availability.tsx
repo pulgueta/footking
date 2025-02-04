@@ -34,17 +34,15 @@ import {
 
 type BookingFormProps = {
   field: Field;
-  userId: Field["userId"];
 };
 
-export const BookingForm = ({ field, userId }: BookingFormProps) => {
+export const BookingForm = ({ field }: BookingFormProps) => {
   const [_, setSelectedDay] = useState<Date | undefined>(undefined);
   const queryClient = useQueryClient();
 
   const form = useForm<CreateBooking>({
     resolver: zodResolver(createBookingSchema),
     defaultValues: {
-      userId,
       fieldId: field.id,
       day: "",
       startHour: "",

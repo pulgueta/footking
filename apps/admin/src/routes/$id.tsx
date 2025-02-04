@@ -1,24 +1,37 @@
 import { useState } from "react";
 
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { Field } from "api/db";
 
 import { AddSoccerFieldDialog } from "@/components/add-field";
 import { BookingForm } from "@/components/availability";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/auth-client";
 import { cacheKeys } from "api/cache-keys";
 import { ErrorComponent } from "@/components/error-component";
 import { LoadingComponent } from "@/components/loading-component";
+import { Paragraph } from "@/components/ui/typography";
+import { formatPrice } from "@/lib/utils";
 
 const HomeComponent = () => {
   const [selectedField, setSelectedField] = useState<Field | null>(null);
 
+  const navigate = useNavigate();
+
   const { user } = useSession();
 
-  const { data: fields } = useSuspenseQuery(getOwnerFields(user?.id ?? "7BWmXI4GuZ"));
+  if (!user) {
+    navigate({
+      from: "/$id",
+      to: "/login",
+      viewTransition: true,
+    });
+  }
+
+  // @ts-expect-error
+  const { data: fields } = useSuspenseQuery(getOwnerFields(user?.id));
 
   return (
     <main className="p-4">
@@ -41,16 +54,20 @@ const HomeComponent = () => {
           >
             <CardHeader>
               <CardTitle>{field.name}</CardTitle>
+              <CardDescription>{formatPrice(field.hourlyRate)} COP/h</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-500 text-sm">
-                {field.address}, {field.state}
-              </p>
+              <Paragraph muted weight="normal">
+                {field.city}, {field.state}
+              </Paragraph>
+              <Paragraph muted weight="normal">
+                {field.address}
+              </Paragraph>
             </CardContent>
           </Card>
         ))}
       </section>
-      {selectedField && <BookingForm field={selectedField} userId={selectedField.userId} />}
+      {selectedField && <BookingForm field={selectedField} />}
     </main>
   );
 };

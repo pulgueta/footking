@@ -9,7 +9,7 @@ const RootLayout = () => {
     <>
       <Header />
       <Outlet />
-      <TanStackRouterDevtools position="bottom-right" />
+      {process.env.NODE_ENV === "development" && <TanStackRouterDevtools position="bottom-right" />}
     </>
   );
 };

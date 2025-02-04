@@ -27,6 +27,6 @@ export const fieldRoutes = app
     } catch (error) {
       console.error(error);
 
-      return c.json({ message: "Field already exists" }, 400);
+      return c.json({ message: "An error ocurred" }, 400);
     }
   });

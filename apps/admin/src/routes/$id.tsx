@@ -1,11 +1,9 @@
-import { useState } from "react";
-
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import type { Field } from "api/db";
+import { fallback, zodSearchValidator } from "@tanstack/router-zod-adapter";
+import { object, string } from "zod";
 
 import { AddSoccerFieldDialog } from "@/components/add-field";
-import { BookingForm } from "@/components/availability";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/auth-client";
@@ -16,13 +14,12 @@ import { Paragraph } from "@/components/ui/typography";
 import { formatPrice } from "@/lib/utils";
 
 const HomeComponent = () => {
-  const [selectedField, setSelectedField] = useState<Field | null>(null);
-
   const navigate = useNavigate();
+  const { id } = Route.useParams();
 
   const { user } = useSession();
 
-  if (!user) {
+  if (!user || (user.id !== id && id.length < 6)) {
     navigate({
       from: "/$id",
       to: "/login",
@@ -41,17 +38,7 @@ const HomeComponent = () => {
       </header>
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {fields.map((field) => (
-          <Card
-            key={field.id}
-            className="cursor-pointer transition-shadow hover:shadow-lg"
-            onClick={() =>
-              setSelectedField({
-                ...field,
-                createdAt: field.createdAt ? new Date(field.createdAt) : null,
-                updatedAt: field.updatedAt ? new Date(field.updatedAt) : null,
-              })
-            }
-          >
+          <Card key={field.id} className="cursor-pointer transition-shadow hover:shadow-lg">
             <CardHeader>
               <CardTitle>{field.name}</CardTitle>
               <CardDescription>{formatPrice(field.hourlyRate)} COP/h</CardDescription>
@@ -67,7 +54,6 @@ const HomeComponent = () => {
           </Card>
         ))}
       </section>
-      {selectedField && <BookingForm field={selectedField} />}
     </main>
   );
 };
@@ -88,9 +74,14 @@ const getOwnerFields = (ownerId: string) =>
     },
   });
 
+const ownerIdSearchSchema = object({
+  ownerId: fallback(string().min(6), ""),
+});
+
 export const Route = createFileRoute("/$id")({
   pendingComponent: LoadingComponent,
   component: HomeComponent,
+  params: zodSearchValidator(ownerIdSearchSchema),
   errorComponent: (error) => <ErrorComponent {...error} />,
   loader: ({ context: { queryClient }, params: { id } }) =>
     queryClient.ensureQueryData(getOwnerFields(id)),

@@ -10,7 +10,8 @@ const HomeComponent = () => {
     <main className="p-4">
       <article className="mx-auto flex w-full max-w-xs items-center justify-center rounded border p-4">
         <Button asChild>
-          <Link to="/$id" params={{ id: user!.id }}>
+          {/* @ts-ignore */}
+          <Link to="/$id" params={{ id: user?.id }}>
             Ir a mis canchas
           </Link>
         </Button>

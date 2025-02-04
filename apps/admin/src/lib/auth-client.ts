@@ -19,3 +19,5 @@ export function useSession() {
     isPending,
   };
 }
+
+export const { signIn } = authClient;

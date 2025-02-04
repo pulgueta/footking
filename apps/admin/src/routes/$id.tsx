@@ -9,15 +9,16 @@ import { BookingForm } from "@/components/availability";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/auth-client";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cacheKeys } from "api/cache-keys";
+import { ErrorComponent } from "@/components/error-component";
+import { LoadingComponent } from "@/components/loading-component";
 
 const HomeComponent = () => {
   const [selectedField, setSelectedField] = useState<Field | null>(null);
 
   const { user } = useSession();
 
-  const { data: fields } = useSuspenseQuery(getOwnerFields(user?.id ?? "2"));
+  const { data: fields } = useSuspenseQuery(getOwnerFields(user?.id ?? "7BWmXI4GuZ"));
 
   return (
     <main className="p-4">
@@ -49,9 +50,7 @@ const HomeComponent = () => {
           </Card>
         ))}
       </section>
-      {selectedField && (
-        <BookingForm field={selectedField} onClose={() => {}} userId={selectedField.userId} />
-      )}
+      {selectedField && <BookingForm field={selectedField} userId={selectedField.userId} />}
     </main>
   );
 };
@@ -60,19 +59,22 @@ const getOwnerFields = (ownerId: string) =>
   queryOptions({
     queryKey: [cacheKeys.fields, ownerId],
     queryFn: async () => {
-      const fields = await api.fields.$get({
+      const query = await api.fields.$get({
         query: {
           ownerId,
         },
       });
 
-      return await fields.json();
+      const response = await query.json();
+
+      return response;
     },
   });
 
 export const Route = createFileRoute("/$id")({
-  pendingComponent: () => <Skeleton className="h-96" />,
+  pendingComponent: LoadingComponent,
   component: HomeComponent,
+  errorComponent: (error) => <ErrorComponent {...error} />,
   loader: ({ context: { queryClient }, params: { id } }) =>
     queryClient.ensureQueryData(getOwnerFields(id)),
 });

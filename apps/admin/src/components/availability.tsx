@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -34,10 +35,9 @@ import {
 type BookingFormProps = {
   field: Field;
   userId: Field["userId"];
-  onClose: () => void;
 };
 
-export const BookingForm = ({ field, userId, onClose }: BookingFormProps) => {
+export const BookingForm = ({ field, userId }: BookingFormProps) => {
   const [_, setSelectedDay] = useState<Date | undefined>(undefined);
   const queryClient = useQueryClient();
 
@@ -62,7 +62,6 @@ export const BookingForm = ({ field, userId, onClose }: BookingFormProps) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      onClose();
     },
   });
 
@@ -98,7 +97,10 @@ export const BookingForm = ({ field, userId, onClose }: BookingFormProps) => {
   }));
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>{field.name}</Button>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Reservar {field.name}</DialogTitle>

@@ -70,6 +70,8 @@ export const AddSoccerFieldDialog = () => {
     },
   });
 
+  console.log(form.getValues());
+
   const { states, citiesFromState } = useColombia();
 
   const selectedState = form.watch("state");

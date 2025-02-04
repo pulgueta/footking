@@ -27,11 +27,18 @@ export async function createField(fieldData: CreateField) {
     return false;
   }
 
-  const [createdField] = await db.insert(fieldTable).values(fieldData).returning();
+  const [createdField] = await db
+    .insert(fieldTable)
+    .values({
+      ...fieldData,
+      userId: "7BWmXI4GuZ",
+    })
+    .returning();
 
-  await deleteCacheKey(cacheKeys.fields);
-
-  console.log("Field created");
+  await Promise.all([
+    deleteCacheKey(cacheKeys.fields),
+    deleteCacheKey(`${cacheKeys.fields}:${fieldData.userId}`),
+  ]);
 
   return createdField;
 }

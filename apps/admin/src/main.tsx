@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 
-import { TanstackProvider } from "@/providers/query-provider";
+import { TanstackErrorBoundary, TanstackProvider } from "@/providers/query-provider";
 import { routeTree } from "@/routeTree.gen";
 
 // Set up a Router instance
@@ -31,7 +31,9 @@ if (!rootElement.innerHTML) {
 
   root.render(
     <TanstackProvider>
-      <RouterProvider router={router} />
+      <TanstackErrorBoundary>
+        <RouterProvider router={router} />
+      </TanstackErrorBoundary>
     </TanstackProvider>,
   );
 }

@@ -1,39 +1,69 @@
+import { sql } from "drizzle-orm";
+
 import { db } from "@/db/config";
-import type { Booking, CreateBooking } from "@/db/schema/booking";
+import type { Field } from "@/db/schema";
+import type { Booking, BookingWithField, CreateBooking } from "@/db/schema/booking";
 import { bookingTable } from "@/db/schema/booking";
 import { deleteCacheKey, getCacheKey, setCacheKey } from "@/utils/cache";
 import { cacheKeys } from "@/utils/cache-keys";
 
 export async function createBooking(bookingData: CreateBooking) {
-  const existingBooking = await getBookings();
+  const isBooked = await isHourBooked(bookingData);
 
-  const isHourBooked = existingBooking.some(
-    (booking) =>
-      booking.startHour === bookingData.startHour &&
-      booking.endHour === bookingData.endHour &&
-      booking.day === bookingData.day,
-  );
-
-  if (isHourBooked) {
+  if (isBooked) {
     return false;
   }
 
+  const bookingValue = await getFieldHourlyRate(bookingData.fieldId);
+  const parsedStart = Number(bookingData.startHour.split(":")[0]);
+  const parsedEndHour = Number(bookingData.endHour.split(":")[0]);
+
   await Promise.all([
-    await db.insert(bookingTable).values(bookingData),
+    db.insert(bookingTable).values({
+      ...bookingData,
+      bookingTotalValue: sql<number>`(${parsedEndHour} - ${parsedStart}) * ${bookingValue}`,
+    }),
     deleteCacheKey(cacheKeys.bookings),
-    deleteCacheKey(`${cacheKeys.bookings}${bookingData.userId}`),
   ]);
 }
 
-export async function getBookings() {
-  const cachedBookings = await getCacheKey<Booking[]>(cacheKeys.bookings);
+export async function isHourBooked(
+  data: Pick<Booking, "startHour" | "endHour" | "day" | "fieldId">,
+) {
+  const existingBookings = await getBookingsFromField(data.fieldId);
+
+  return existingBookings.some(
+    (booking) =>
+      booking.startHour === data.startHour &&
+      booking.endHour === data.endHour &&
+      booking.day === data.day,
+  );
+}
+
+export async function getFieldHourlyRate(fieldId: Field["id"]) {
+  const field = await db.query.fieldTable.findFirst({
+    where: (t, { eq }) => eq(t.id, fieldId),
+    columns: {
+      hourlyRate: true,
+    },
+  });
+
+  return field?.hourlyRate;
+}
+
+export async function getBookingsFromField(fieldId: Field["id"]) {
+  const cachedBookings = await getCacheKey<BookingWithField[]>(cacheKeys.bookings);
 
   if (cachedBookings) {
     return cachedBookings;
   }
 
   const bookings = await db.query.bookingTable.findMany({
+    where: (t, { eq }) => eq(t.fieldId, fieldId),
     orderBy: (t, { asc }) => [asc(t.createdAt)],
+    with: {
+      field: true,
+    },
   });
 
   await setCacheKey(cacheKeys.bookings, bookings);
@@ -41,36 +71,36 @@ export async function getBookings() {
   return bookings;
 }
 
-export async function getBookingsByUserId(userId: Booking["userId"]) {
-  const cachedBookings = await getCacheKey<Booking[]>(`${cacheKeys.bookings}${userId}`);
+export async function getBookingsByReservationName(name: Booking["reservedBy"]) {
+  const cachedBookings = await getCacheKey<Booking[]>(`${cacheKeys.bookings}${name}`);
 
   if (cachedBookings) {
     return cachedBookings;
   }
 
   const bookings = await db.query.bookingTable.findMany({
-    where: (t, { eq }) => eq(t.userId, userId),
+    where: (t, { eq }) => eq(t.reservedBy, name),
     orderBy: (t, { asc }) => [asc(t.createdAt)],
   });
 
-  await setCacheKey(`${cacheKeys.bookings}${userId}`, bookings);
+  await setCacheKey(`${cacheKeys.bookings}${name}`, bookings);
 
   return bookings;
 }
 
-export async function getBookingByUserId(userId: Booking["userId"]) {
-  const cachedBooking = await getCacheKey<Booking>(`${cacheKeys.booking}:${userId}`);
+export async function getBookingByReservationName(name: Booking["reservedBy"]) {
+  const cachedBooking = await getCacheKey<Booking>(`${cacheKeys.booking}:${name}`);
 
   if (cachedBooking) {
     return cachedBooking;
   }
 
   const bookings = await db.query.bookingTable.findFirst({
-    where: (t, { eq }) => eq(t.userId, userId),
+    where: (t, { eq }) => eq(t.reservedBy, name),
     orderBy: (t, { asc }) => [asc(t.createdAt)],
   });
 
-  await setCacheKey(`${cacheKeys.booking}:${userId}`, bookings);
+  await setCacheKey(`${cacheKeys.booking}:${name}`, bookings);
 
   return bookings;
 }

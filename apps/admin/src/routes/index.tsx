@@ -9,12 +9,17 @@ const HomeComponent = () => {
   return (
     <main className="p-4">
       <article className="mx-auto flex w-full max-w-xs items-center justify-center rounded border p-4">
-        <Button asChild>
-          {/* @ts-ignore */}
-          <Link to="/$id" params={{ id: user?.id }}>
-            Ir a mis canchas
-          </Link>
-        </Button>
+        {user ? (
+          <Button asChild>
+            <Link to="/$id" params={{ id: user?.id }}>
+              Ir a mis canchas
+            </Link>
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link to="/login">Iniciar sesión</Link>
+          </Button>
+        )}
       </article>
     </main>
   );

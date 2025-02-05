@@ -6,6 +6,8 @@ import type { ErrorComponentProps } from "@tanstack/react-router";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const ErrorComponent: FC<ErrorComponentProps> = ({ error, reset }) => {
+  console.log(error);
+
   return (
     <div className="flex min-h-[calc(100dvh-65px)] items-center justify-center p-4">
       <Alert variant="destructive" className="w-full max-w-md">

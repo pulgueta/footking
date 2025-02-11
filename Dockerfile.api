@@ -17,8 +17,8 @@ WORKDIR /app
 
 RUN npm i -g pnpm
 
-COPY --from=deps /app/node_modules /app/node_modules
-COPY . /app
+COPY --from=deps /app/apps/api/node_modules /app/node_modules
+COPY /app/apps/api /app
 
 RUN pnpm build
 

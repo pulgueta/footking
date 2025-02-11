@@ -1,9 +1,10 @@
+import { createFieldSchema } from "@footking/db/dist/schema";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
-import { createFieldSchema } from "@/db/schema";
 import { searchFieldSchema } from "@/schemas";
-import { createField, getOwnerFields } from "@/services/owner.db";
+import { createField, getFields, getOwnerFields } from "@/services/owner.db";
+import { parseBotResponse } from "@/utils/parse-bot-response";
 
 const app = new Hono();
 
@@ -15,10 +16,15 @@ export const fieldRoutes = app
 
     return c.json(fields);
   })
+  .get("/all", async (c) => {
+    const fields = await getFields();
+
+    const botResponse = parseBotResponse(fields);
+
+    return c.json(botResponse);
+  })
   .post("/", zValidator("json", createFieldSchema), async (c) => {
     const field = c.req.valid("json");
-
-    console.log(field);
 
     try {
       const createdField = await createField(field);

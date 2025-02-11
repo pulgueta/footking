@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "declaration": true,
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "strict": true,
     "composite": true,
@@ -11,9 +10,11 @@
     "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "verbatimModuleSyntax": true,  
+    "isolatedModules": true       
   },
-  "include": ["./src/**/*", "drizzle.config.ts"],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules", "dist"],
   "tsc-alias": {
     "resolveFullPaths": true

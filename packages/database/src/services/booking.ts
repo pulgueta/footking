@@ -1,11 +1,10 @@
 import { sql } from "drizzle-orm";
 
-import { db } from "@/db/config";
-import type { Field } from "@/db/schema";
-import type { Booking, BookingWithField, CreateBooking } from "@/db/schema/booking";
-import { bookingTable } from "@/db/schema/booking";
-import { deleteCacheKey, getCacheKey, setCacheKey } from "@/utils/cache";
-import { cacheKeys } from "@/utils/cache-keys";
+import { deleteCacheKey, getCacheKey, setCacheKey } from "@/cache";
+import { cacheKeys } from "@/cache/cache-keys";
+import { db } from "@/index";
+import type { Booking, BookingWithField, CreateBooking, Field } from "@/schema";
+import { bookingTable } from "@/schema/booking";
 
 export async function createBooking(bookingData: CreateBooking) {
   const isBooked = await isHourBooked(bookingData);

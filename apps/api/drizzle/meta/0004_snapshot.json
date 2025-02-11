@@ -105,12 +105,8 @@
           "name": "account_userId_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -182,9 +178,7 @@
       "indexes": {
         "session_token_unique": {
           "name": "session_token_unique",
-          "columns": [
-            "token"
-          ],
+          "columns": ["token"],
           "isUnique": true
         }
       },
@@ -193,12 +187,8 @@
           "name": "session_userId_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -332,12 +322,8 @@
           "name": "booking_fieldId_field_id_fk",
           "tableFrom": "booking",
           "tableTo": "field",
-          "columnsFrom": [
-            "fieldId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["fieldId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -423,30 +409,22 @@
       "indexes": {
         "field_name_unique": {
           "name": "field_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         },
         "by_userId_idx": {
           "name": "by_userId_idx",
-          "columns": [
-            "userId"
-          ],
+          "columns": ["userId"],
           "isUnique": false
         },
         "by_createdAt_idx": {
           "name": "by_createdAt_idx",
-          "columns": [
-            "createdAt"
-          ],
+          "columns": ["createdAt"],
           "isUnique": false
         },
         "by_field_name_idx": {
           "name": "by_field_name_idx",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
@@ -455,12 +433,8 @@
           "name": "field_userId_user_id_fk",
           "tableFrom": "field",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -547,37 +521,27 @@
       "indexes": {
         "user_email_unique": {
           "name": "user_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         },
         "user_phoneNumber_unique": {
           "name": "user_phoneNumber_unique",
-          "columns": [
-            "phoneNumber"
-          ],
+          "columns": ["phoneNumber"],
           "isUnique": true
         },
         "by_id_idx": {
           "name": "by_id_idx",
-          "columns": [
-            "id"
-          ],
+          "columns": ["id"],
           "isUnique": true
         },
         "by_phoneNumber_idx": {
           "name": "by_phoneNumber_idx",
-          "columns": [
-            "phoneNumber"
-          ],
+          "columns": ["phoneNumber"],
           "isUnique": true
         },
         "by_user_name_idx": {
           "name": "by_user_name_idx",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": false
         }
       },

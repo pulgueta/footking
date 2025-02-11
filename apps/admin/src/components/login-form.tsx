@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, redirect } from "@tanstack/react-router";
+import { toast } from "sonner";
 // import { KeyRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,20 +39,22 @@ export const LoginForm = () => {
   const isDisabled = form.formState.isSubmitting;
 
   const onSubmit = form.handleSubmit(async (values) => {
-    try {
-      const req = await signIn.email(values);
-
-      if (req.data) {
+    const req = signIn.email(values, {
+      onSuccess: ({ data }) => {
         redirect({
           to: "/$id",
           params: {
-            id: req.data.user.id,
+            id: data.user.id,
           },
         });
-      }
-    } catch (error) {
-      console.error(error);
-    }
+      },
+    });
+
+    toast.promise(req, {
+      loading: "Iniciando sesión...",
+      success: "¡Bienvenido de vuelta!",
+      error: "Credenciales inválidas",
+    });
   });
 
   return (

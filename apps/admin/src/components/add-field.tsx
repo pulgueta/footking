@@ -2,8 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DollarSign } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { CreateField, FieldAvailability } from "api/db";
-import { createFieldSchema } from "api/db";
+import type { CreateField, FieldAvailability } from "@footking/db/schemas";
+import { createFieldSchema } from "@footking/db/schemas";
+import { cacheKeys } from "@footking/db/cache-keys";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +32,6 @@ import {
 } from "@/components/ui/select";
 import { useColombia } from "@/hooks/use-colombia";
 import { createField } from "@/services/field";
-import { cacheKeys } from "api/cache-keys";
 import { useSession } from "@/lib/auth-client";
 
 const defaultAvailability: FieldAvailability = {

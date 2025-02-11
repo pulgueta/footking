@@ -4,8 +4,8 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Field, CreateBooking } from "api/db";
-import { createBookingSchema } from "api/db";
+import type { Field, CreateBooking } from "@footking/db/schemas";
+import { createBookingSchema } from "@footking/db/schemas";
 
 import { Button } from "@/components/ui/button";
 import {

@@ -1,11 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { openAPI, phoneNumber } from "better-auth/plugins";
 
-import { db } from "@/db/config";
-import * as schema from "@/db/schema";
-import { sendOTPMessage } from "@/services/twilio";
-import { getCacheKey, setCacheKey } from "./cache";
+import { db } from "@footking/db";
+import { getCacheKey, setCacheKey } from "@footking/db/cache";
+import * as schema from "@footking/db/schemas";
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -15,9 +13,13 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: {
+      // @ts-expect-error
       user: schema.userTable,
+      // @ts-expect-error
       session: schema.session,
+      // @ts-expect-error
       account: schema.account,
+      // @ts-expect-error
       verification: schema.verification,
     },
   }),
@@ -36,14 +38,6 @@ export const auth = betterAuth({
       set: setCacheKey,
     },
   },
-  plugins: [
-    phoneNumber({
-      sendOTP: async ({ code, phoneNumber }) => {
-        await sendOTPMessage(phoneNumber, code);
-      },
-    }),
-    openAPI(),
-  ],
 });
 
 export type User = typeof auth.$Infer.Session.user | null;

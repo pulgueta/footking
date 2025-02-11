@@ -8,6 +8,9 @@ jobs:
   deploy:
     name: Run deployment
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, bot]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

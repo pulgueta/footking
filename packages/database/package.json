@@ -1,0 +1,45 @@
+{
+  "name": "@footking/db",
+  "type": "module",
+  "private": false,
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    },
+    "./cache": {
+      "import": "./src/cache/index.ts"
+    },
+    "./cache-keys": {
+      "import": "./src/cache/cache-keys.ts"
+    },
+    "./schemas": {
+      "import": "./src/schema/index.ts"
+    },
+    "./services": {
+      "import": "./src/services/index.ts"
+    }
+  },
+  "scripts": {
+    "db:reset": "tsx src/db/reset.ts",
+    "db:seed": "tsx src/db/reset.ts && tsx src/db/seed.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "version": "0.1.0",
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "@upstash/ratelimit": "^2.0.5",
+    "@upstash/redis": "^1.34.4",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.1",
+    "drizzle-zod": "^0.7.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "drizzle-kit": "^0.30.4",
+    "drizzle-seed": "^0.3.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,8 +1,8 @@
-import { db } from "@/db/config";
-import type { CreateField, Field } from "@/db/schema";
-import { fieldTable } from "@/db/schema";
-import { deleteCacheKey, getCacheKey, setCacheKey } from "@/utils/cache";
-import { cacheKeys } from "@/utils/cache-keys";
+import { deleteCacheKey, getCacheKey, setCacheKey } from "@/cache";
+import { cacheKeys } from "@/cache/cache-keys";
+import { db } from "@/index";
+import type { CreateField, Field } from "@/schema";
+import { fieldTable } from "@/schema";
 
 export async function getOwnerFields(ownerId: Field["userId"]) {
   const cachedFields = await getCacheKey<Field[]>(`${cacheKeys.fields}:${ownerId}`);
@@ -16,6 +16,30 @@ export async function getOwnerFields(ownerId: Field["userId"]) {
   });
 
   await setCacheKey(`${cacheKeys.fields}:${ownerId}`, fields);
+
+  return fields;
+}
+
+export async function getFields() {
+  const cachedFields = await getCacheKey<Field[]>(cacheKeys.fields);
+
+  if (cachedFields) {
+    return cachedFields;
+  }
+
+  const fields = await db.query.fieldTable.findMany({
+    orderBy: (t, { asc }) => [asc(t.createdAt)],
+    columns: {
+      address: true,
+      name: true,
+      availability: true,
+      city: true,
+      hourlyRate: true,
+      state: true,
+    },
+  });
+
+  await setCacheKey(cacheKeys.fields, fields);
 
   return fields;
 }

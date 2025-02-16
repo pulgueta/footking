@@ -26,6 +26,7 @@ export const fieldTable = sqliteTable(
       .notNull()
       .references(() => userTable.id, { onDelete: "cascade" }),
     availability: text({ mode: "json" }).$type<FieldAvailability>().notNull(),
+    daysToBookAhead: int().notNull(),
     createdAt: integer({ mode: "timestamp" }).$defaultFn(() => new Date()),
     updatedAt: integer({ mode: "timestamp" })
       .$defaultFn(() => new Date())

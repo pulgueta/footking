@@ -1,20 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "esModuleInterop": true,
     "strict": true,
-    "composite": true,
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "verbatimModuleSyntax": true,
+    "moduleResolution": "Bundler",
+    "strictNullChecks": true,
     "skipLibCheck": true,
-    "outDir": "dist",
     "paths": {
-      "@/*": ["./src/*"]
-    },
-    "verbatimModuleSyntax": true,  
-    "isolatedModules": true       
+      "@/*": ["./src/*"],
+    }
   },
-  "include": ["./src/**/*"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "tsc-alias": {
     "resolveFullPaths": true

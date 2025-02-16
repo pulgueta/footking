@@ -2,12 +2,12 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { fallback, zodSearchValidator } from "@tanstack/router-zod-adapter";
 import { object, string } from "zod";
+import { cacheKeys } from "@footking/db/cache-keys";
 
 import { AddSoccerFieldDialog } from "@/components/add-field";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/auth-client";
-import { cacheKeys } from "api/cache-keys";
 import { ErrorComponent } from "@/components/error-component";
 import { LoadingComponent } from "@/components/loading-component";
 import { Paragraph } from "@/components/ui/typography";

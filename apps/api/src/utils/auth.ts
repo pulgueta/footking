@@ -13,13 +13,9 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: {
-      // @ts-expect-error
       user: schema.userTable,
-      // @ts-expect-error
       session: schema.session,
-      // @ts-expect-error
       account: schema.account,
-      // @ts-expect-error
       verification: schema.verification,
     },
   }),

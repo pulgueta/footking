@@ -26,28 +26,21 @@
     }
   },
   "dependencies": {
-    "@builderbot/bot": "1.2.5",
-    "@builderbot/database-mongo": "^1.2.5",
-    "@builderbot/provider-meta": "1.2.5",
     "@footking/db": "workspace:*",
     "@hono/node-server": "^1.13.8",
     "@hono/zod-validator": "^0.4.2",
     "@libsql/client": "^0.14.0",
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.4",
-    "better-auth": "^1.1.15",
+    "better-auth": "^1.1.17",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.39.1",
-    "drizzle-zod": "^0.7.0",
-    "hono": "^4.6.20",
+    "hono": "^4.7.1",
     "hono-geo-middleware": "^0.1.2",
-    "twilio": "^5.4.3",
-    "zod": "^3.24.1"
+    "twilio": "^5.4.4",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1",
-    "drizzle-kit": "^0.30.4",
-    "drizzle-seed": "^0.3.1",
+    "@types/node": "^22.13.3",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"

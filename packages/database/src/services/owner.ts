@@ -1,8 +1,8 @@
-import { deleteCacheKey, getCacheKey, setCacheKey } from "@/cache";
-import { cacheKeys } from "@/cache/cache-keys";
-import { db } from "@/index";
-import type { CreateField, Field } from "@/schema";
-import { fieldTable } from "@/schema";
+import { deleteCacheKey, getCacheKey, setCacheKey } from "../cache";
+import { cacheKeys } from "../cache/cache-keys";
+import { db } from "../index";
+import type { CreateField, Field } from "../schema";
+import { fieldTable } from "../schema";
 
 export async function getOwnerFields(ownerId: Field["userId"]) {
   const cachedFields = await getCacheKey<Field[]>(`${cacheKeys.fields}:${ownerId}`);

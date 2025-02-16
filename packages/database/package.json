@@ -31,12 +31,12 @@
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.4",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.39.1",
+    "drizzle-orm": "^0.39.3",
     "drizzle-zod": "^0.7.0",
-    "zod": "^3.24.1"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.4",
     "drizzle-kit": "^0.30.4",
     "drizzle-seed": "^0.3.1",
     "tsx": "^4.19.2",

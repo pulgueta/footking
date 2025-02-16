@@ -58,6 +58,7 @@ export const AddSoccerFieldDialog = () => {
       hourlyRate: 0,
       city: "",
       availability: defaultAvailability,
+
       userId: user?.id,
     },
   });
@@ -169,6 +170,31 @@ export const AddSoccerFieldDialog = () => {
                 />
               )}
             </div>
+
+            <FormField
+              control={form.control}
+              name="hourlyRate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Valor la hora</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center">
+                      <div className="flex h-9 items-center justify-center rounded-l border border-r-0 bg-muted px-3 py-1">
+                        <DollarSign className="size-4" />
+                      </div>
+                      <Input
+                        className="rounded-l-none border-l-0"
+                        placeholder="100000"
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}

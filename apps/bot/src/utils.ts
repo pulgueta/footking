@@ -1,36 +1,29 @@
-import { addKeyword } from "@builderbot/bot";
-import { MongoAdapter } from "@builderbot/database-mongo";
-import { MetaProvider } from "@builderbot/provider-meta";
+import { getFieldByName, getFields } from "@footking/db/services";
 
-import { Field } from "@footking/db/dist/schema";
-import { getFields } from "@footking/db/dist/services";
+export function formatPrice(price: number | undefined) {
+  if (!price) {
+    return "No disponible";
+  }
 
-import { stateKeys } from ".";
+  return new Intl.NumberFormat("es-CO", { currency: "COP", style: "currency" })
+    .format(price)
+    .replace(",00", "");
+}
 
-export const welcomeFlow = addKeyword<MetaProvider, MongoAdapter>([
-  "veo",
-  "quiero reservar",
-  "hola",
-  "reservar",
-  "reserva",
-])
-  .addAnswer(
-    "¡Hola! ¿Qué cancha te gustaría reservar?",
-    { capture: false },
-    async (_, { state }) => {
-      const fields = await getFields();
+export async function fieldButtons() {
+  const fields = await getFields();
 
-      await state.update({ fields });
-    },
-  )
-  .addAction(async (_, { state, flowDynamic }) => {
-    const fields = state.get<Field[]>(stateKeys.fields);
+  return fields.map((field) => ({
+    body: field.name,
+  }));
+}
 
-    const availFieldsWithHours = fields.map((field) => ({
-      name: field.name,
-      hourlyRate: field.hourlyRate,
-      hours: field.availability,
-    }));
+export async function daysAheadButtons(name: string) {
+  const fieldDays = await getFieldByName(name);
 
-    await flowDynamic(`¡Claro! Estas son las canchas disponibles: ${availFieldsWithHours}`);
-  });
+  if (!fieldDays) {
+    return [];
+  }
+
+  return fieldDays.daysToBookAhead;
+}

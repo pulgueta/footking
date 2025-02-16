@@ -83,6 +83,7 @@ export const LoginForm = () => {
                           placeholder="tucorreo@electroni.co"
                           type="email"
                           autoComplete="email"
+                          data-1p-ignore={process.env.NODE_ENV === "development"}
                           {...field}
                         />
                       </FormControl>
@@ -112,6 +113,7 @@ export const LoginForm = () => {
                           placeholder="*********"
                           type="password"
                           autoComplete="current-password"
+                          data-1p-ignore={process.env.NODE_ENV === "development"}
                           {...field}
                         />
                       </FormControl>
